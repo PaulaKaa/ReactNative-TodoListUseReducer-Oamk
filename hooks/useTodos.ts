@@ -29,7 +29,6 @@ export const useTask = () => {
 
   //Add task function
   const addTask = (name: string) => {
-    if (!name.trim()) return;
     const newtask: Task = {
       id: Date.now().toString(),
       name: name.trim(),
