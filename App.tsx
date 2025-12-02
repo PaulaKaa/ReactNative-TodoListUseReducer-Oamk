@@ -1,77 +1,29 @@
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Button } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Task from "./components/Task";
+import { useTask } from "./hooks/useTodos";
+import { useState } from "react";
 
 /*
 
-Todo list app enables user to create list of tasks. Data is saved into phone’s memory.
+UPDATE!
 
-User can also mark task as done/undone.
-Requirements for the app are as follows.
-• Display list of tasks
-• User can add new task
-• Task can be marked as done/undone by pressing a row/line on list
-• Data is save into phone’s memory (AsyncStorage)
-• App code is divided into (sub)components
-Use previous exercises and here are also some resources which might be useful.
+Extend todo app from previous weekly assignment by using useReducer to manage tasks. 
+All states and related functions should be implemented as a custom hook. 
+Create hooks folder and create useTodos custom hook.
 
 */
 
-//npm install @react-native-async-storage/async-storage
-
-const STORAGE_KEY = "TODOLIST_TASKS";
-
-interface Task {
-  id: string;
-  name: string;
-  done: boolean;
-}
-
 export default function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [input, setInput] = useState<string>("");
+  const { tasks, addTask, getLineThrough } = useTask();
+  const [input, setInput] = useState("");
 
-  //Add task function
-  const addTask = () => {
-    if (input.trim()) {
-      setTasks((prev) => [
-        ...prev,
-        { id: Date.now().toString(), name: input.trim(), done: false },
-      ]);
-      setInput(""); //empty input
-    }
+  const add = () => {
+    addTask(input);
+    setInput("");
   };
-
-  //Marks done
-  const getLineThrough = (id: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, done: !task.done } : task
-      )
-    );
-  };
-
-  // Load items from AsyncStorage on mount
-  useEffect(() => {
-    (async () => {
-      try {
-        const json = await AsyncStorage.getItem(STORAGE_KEY);
-        if (json) setTasks(JSON.parse(json));
-      } catch (e) {
-        // handle error
-        throw e;
-      }
-    })();
-  }, []);
-
-  // Save items to AsyncStorage whenever items change
-  useEffect(() => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  }, [tasks]);
 
   return (
     <View style={styles.container}>
@@ -86,8 +38,8 @@ export default function App() {
         <Button
           mode="text"
           style={styles.button}
-          textColor="#2196F3"
-          onPress={addTask}
+          textColor="#FFFFFF"
+          onPress={add}
         >
           Save
         </Button>
@@ -112,7 +64,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f2f2f2",
   },
   title: {
     fontSize: 24,
@@ -120,6 +72,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: "center",
     marginTop: 32,
+    backgroundColor: "#2196F3",
+    paddingTop: 12,
+    paddingBottom: 12,
+    color: "#FFFFFF",
   },
   inputRow: {
     flexDirection: "row", //rivittää textinput ja button
@@ -128,8 +84,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginLeft: 12,
+    backgroundColor: "#ffffff",
+    marginRight: 8,
+    borderRadius: 6,
   },
   button: {
     marginRight: 8,
+    backgroundColor: "green",
+    color: "white",
   },
 });
