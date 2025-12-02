@@ -18,7 +18,7 @@ Create hooks folder and create useTodos custom hook.
 
 export default function App() {
   const { tasks, addTask, getLineThrough } = useTask();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string>("");
 
   const add = () => {
     addTask(input);
